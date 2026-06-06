@@ -7,7 +7,7 @@ const router = Router();
 router.get("/", async (req, res) => {
   const { userId } = req.query;
   const result = userId
-    ? await db.query("SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC", [userId])
+    ? await db.query("SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50", [userId])
     : await db.query("SELECT * FROM posts ORDER BY created_at DESC LIMIT 50");
   res.json(result.rows);
 });
