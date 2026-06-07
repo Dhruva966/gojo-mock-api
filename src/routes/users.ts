@@ -33,4 +33,13 @@ router.delete("/:id", async (req, res) => {
   res.status(204).end();
 });
 
+// GET /users/billing — bug: queries non-existent column "billing_tier",
+// function always returns empty array because column cast fails silently
+router.get("/billing", async (_req, res) => {
+  const result = await db.query(
+    "SELECT id, name, billing_tier, plan_amount FROM users WHERE billing_tier IS NOT NULL"
+  );
+  res.json(result.rows); // always [] — billing_tier column doesn't exist
+});
+
 export { router as usersRouter };
