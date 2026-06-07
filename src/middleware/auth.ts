@@ -4,9 +4,18 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret-change-in-prod";
 
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
-  // Bug: calling split() directly without null check — throws TypeError when
-  // Authorization header is absent: "Cannot read properties of undefined (reading 'split')"
-  const token = req.headers["authorization"].split(" ")[1];
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) {
+    res.status(401).json({ error: "Authorization header missing" });
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    res.status(401).json({ error: "Bearer token missing" });
+    return;
+  }
+
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { userId: string; email: string };
     (req as any).user = payload;
