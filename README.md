@@ -29,3 +29,7 @@ DATABASE_URL=postgresql://localhost:5432/gojo_mock npm run dev
 - "Add an index on posts.user_id" → InsForge Postgres
 - "Add rate limiting middleware" → spawn Replicas agent
 - "Create a PR with the auth changes" → Replicas opens PR
+
+---
+
+*by Dhruva with love*
