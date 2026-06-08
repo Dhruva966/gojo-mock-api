@@ -9,6 +9,14 @@ router.get("/", async (_req, res) => {
   res.json(result.rows);
 });
 
+// GET /users/billing — must be before /:id to avoid being swallowed
+router.get("/billing", async (_req, res) => {
+  const result = await db.query(
+    "SELECT id, name, billing_tier, plan_amount FROM users WHERE billing_tier IS NOT NULL"
+  );
+  res.json(result.rows);
+});
+
 // GET /users/:id — get single user
 router.get("/:id", async (req, res) => {
   const result = await db.query("SELECT * FROM users WHERE id = $1", [req.params.id]);
@@ -31,15 +39,6 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   await db.query("DELETE FROM users WHERE id = $1", [req.params.id]);
   res.status(204).end();
-});
-
-// GET /users/billing — bug: queries non-existent column "billing_tier",
-// function always returns empty array because column cast fails silently
-router.get("/billing", async (_req, res) => {
-  const result = await db.query(
-    "SELECT id, name, billing_tier, plan_amount FROM users WHERE billing_tier IS NOT NULL"
-  );
-  res.json(result.rows); // always [] — billing_tier column doesn't exist
 });
 
 export { router as usersRouter };
